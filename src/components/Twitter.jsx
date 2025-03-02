@@ -17,7 +17,7 @@ const initialDummyTweets = [
   },
   {
     id: 2,
-    content: "What is up with tech comunity ?",
+    content: "What is up with tech community?",
     likesCount: 90,
     createdAt: new Date(),
   },
@@ -25,49 +25,48 @@ const initialDummyTweets = [
 
 const MemoisedAddTweet = memo(AddTweet);
 
-
 const Twitter = () => {
   const [tweets, setTweets] = useState(initialDummyTweets);
 
-  const handleAddTweet = useCallback((text) => {
+  const handleAddTweet = useCallback(
+    (text) => {
       let nextId = tweets.length > 0 ? tweets[tweets.length - 1].id + 1 : 0;
-  
+
       setTweets([
         ...tweets,
         {
           content: text,
-          likesCount: Math.floor(Math.random() * 10), //This is a random like count
+          likesCount: Math.floor(Math.random() * 10), // ✅ Random like count
           id: nextId,
           createdAt: new Date(),
         },
       ]);
-    }, [tweets]);
+    },
+    [tweets]
+  );
 
-  const handleEditTweet = useCallback((tweet) => {
-    //this incoming tweet is the updated tweet
-    setTweets(
-      tweets.map((currentTweet) => {
-        if (currentTweet.id === tweet.id) {
-          return tweet;
-        } else {
-          return currentTweet;
-        }
-      })
+  const handleEditTweet = useCallback(
+    (tweet) => {
+      setTweets(
+        tweets.map((currentTweet) =>
+          currentTweet.id === tweet.id ? tweet : currentTweet
+        )
+      );
+    },
+    [tweets]
+  );
+
+  const sortTweets = useCallback(() => {
+    const sortedTweets = [...tweets].sort(
+      (t1, t2) => t2.createdAt.getTime() - t1.createdAt.getTime()
     );
-  }, []);
-
-  const sortTweets = useCallback( () => {
-    tweets.sort((t1, t2) => t2.createdAt.getTime() - t1.createdAt.getTime());
-    setTweets([...tweets])
+    setTweets(sortedTweets);
   }, [tweets]);
-
 
   return (
     <>
       <MemoisedAddTweet onAddTweet={handleAddTweet} />
-      <button onClick={() => setTweets(sortTweets)}>
-        short Tweet By CreatedAt
-      </button>
+      <button onClick={sortTweets}>Sort Tweets By CreatedAt</button>
       <TweetList tweets={tweets} onEditTweet={handleEditTweet} />
     </>
   );
